@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text, Alert, SafeAreaView, ActivityIndicator, Image, Platform, Button } from 'react-native';
-import { Camera, useCameraPermissions } from 'expo-camera';
+import { View, StyleSheet, TouchableOpacity, Text, Alert, SafeAreaView, ActivityIndicator, Image, Platform } from 'react-native';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -13,22 +13,28 @@ const logo = require("../assets/adaptive-icon.png");
 const ReelsScreen = ({ navigation }) => {
   const user = auth.currentUser;
   const cameraRef = useRef(null);
-  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
-  const [galleryPermission, requestGalleryPermission] = useImagePickerPermissions();
-  const [hasPermission, setPermission] = useState();
+  const [permission, requestPermission] = useCameraPermissions();
+  const [imagePickerPermission, requestImagePickerPermission] = ImagePicker.useMediaLibraryPermissions(); // Updated method for ImagePicker permissions
+  const [hasPermission, setPermission] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const [facing, setFacing] = useState('back');
   const [photoUri, setPhotoUri] = useState(null);
   const [data, setUserData] = useState({});
 
+  function toggleCameraFacing() {
+    setFacing(current => (current === 'back' ? 'front' : 'back'));
+  }
+
   useEffect(() => {
     (async () => {
-      const { status } = await requestCameraPermission();
-      if (status !== 'granted') {
-        Alert.alert('Permission denied', 'We need your permission to use the camera');
+      const { status: cameraStatus } = await requestPermission();
+      const { status: imagePickerStatus } = await requestImagePickerPermission();
+      
+      if (cameraStatus !== 'granted' || imagePickerStatus !== 'granted') {
+        Alert.alert('Permission denied', 'We need your permission to use the camera and media library');
+      } else {
+        setPermission(true);
       }
-      const { status: galleryStatus } = await requestGalleryPermission();
-      setPermission(galleryStatus === 'granted' && status === 'granted');
     })();
   }, []);
 
@@ -50,10 +56,6 @@ const ReelsScreen = ({ navigation }) => {
       fetchUserData();
     }
   }, [user?.uid]);
-
-  const toggleCameraFacing = () => {
-    setFacing(current => (current === 'back' ? 'front' : 'back'));
-  };
 
   const takePicture = async () => {
     if (cameraRef.current) {
@@ -142,23 +144,6 @@ const ReelsScreen = ({ navigation }) => {
     }
   };
 
-  const pickImageFromGallery = async () => {
-    try {
-      const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        aspect: [4, 3],
-        quality: 1,
-      });
-
-      if (!result.canceled) {
-        compressAndSetImage(result.uri);
-      }
-    } catch (error) {
-      console.error("Gallery Pick Error: ", error);
-      Alert.alert("Error", "Failed to pick an image from the gallery.");
-    }
-  };
-
   const renderCameraView = () => {
     const isAndroid = Platform.OS === 'android';
 
@@ -174,14 +159,14 @@ const ReelsScreen = ({ navigation }) => {
         </SafeAreaView>
         {isAndroid ? (
           <View style={styles.androidContainer}>
-            <TouchableOpacity onPress={pickImageFromGallery} style={styles.galleryButtonAndroid}>
+            <TouchableOpacity style={styles.galleryButtonAndroid}>
               <Text style={styles.galleryButtonText}>Choose from Gallery</Text>
               <Ionicons name="image-outline" size={30} color="white" />
             </TouchableOpacity>
           </View>
         ) : (
           <>
-            <Camera ref={cameraRef} style={styles.preview} type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}>
+            <CameraView ref={cameraRef} style={styles.preview} type={facing}>
               <View style={styles.snapButtonContainer}>
                 <TouchableOpacity onPress={takePicture} style={styles.capture}>
                   <Ionicons name='camera-outline' size={30} color="white" />
@@ -189,11 +174,8 @@ const ReelsScreen = ({ navigation }) => {
                 <TouchableOpacity onPress={toggleCameraFacing} style={styles.flipButton}>
                   <Ionicons name="camera-reverse-outline" size={30} color="white" />
                 </TouchableOpacity>
-                <TouchableOpacity onPress={pickImageFromGallery} style={styles.galleryButton}>
-                  <Ionicons name="image-outline" size={30} color="white" />
-                </TouchableOpacity>
               </View>
-            </Camera>
+            </CameraView>
           </>
         )}
       </View>
@@ -213,14 +195,19 @@ const ReelsScreen = ({ navigation }) => {
   );
 
   if (!hasPermission) {
-    return <View />;
-  }
-
-  if (!hasPermission) {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestCameraPermission} title="grant permission" />
+      </View>
+    );
+  }
+
+  if (!permission.granted) {
+    // Camera permissions are not granted yet.
+    return (
+      <View style={styles.container}>
+        <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
+        <Button onPress={requestPermission} title="grant permission" />
       </View>
     );
   }
@@ -325,16 +312,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 40,
     right: 20,
-    backgroundColor: 'rgba(0, 0, 0, 0.6)',
-    borderRadius: 30,
-    padding: 10,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  galleryButton: {
-    position: 'absolute',
-    top: 40,
-    left: 20,
     backgroundColor: 'rgba(0, 0, 0, 0.6)',
     borderRadius: 30,
     padding: 10,

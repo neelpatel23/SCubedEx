@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import { StyleSheet, Text, View, Platform, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert, KeyboardAvoidingView, ActivityIndicator } from "react-native";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
+import { StyleSheet, Text, View, TextInput, Image, SafeAreaView, TouchableOpacity, StatusBar, Alert, ActivityIndicator } from "react-native";
+import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../config/firebase";
 import colors from "../colors";
 const logoImage = require("../assets/logo1.png");
@@ -28,16 +28,9 @@ export default function Login({ navigation }) {
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="default" />
-      <KeyboardAvoidingView
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-        style={styles.KeyboardAvoidingView}
-      >
         <View style={styles.header}>
           <Image source={logoImage} style={styles.backImage} />
         </View>
-        {/* <View style={styles.whiteSheet} /> */}
-        {/* <Text style={styles.title}>Log In</Text> */}
-      {/* </View> */}
       <TextInput
         style={styles.input}
         placeholder="Enter email"
@@ -69,21 +62,13 @@ export default function Login({ navigation }) {
             <Text style={{ fontWeight: 'bold', color: '#fff', fontSize: 18 }}>Log In</Text>
           </TouchableOpacity>
         )}
-      {/* <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
-        <Text style={{color: 'gray', fontWeight: '600', fontSize: 14}}>Don't have an account? </Text>
-        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-          <Text style={{color: '#f57c00', fontWeight: '600', fontSize: 14}}>Sign Up</Text>
-        </TouchableOpacity>
-      </View> */}
       <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
         <Text style={{color: 'gray', fontWeight: '600', fontSize: 14}}>Forgot your password? </Text>
         <TouchableOpacity onPress={() => navigation.navigate("Forgot password")}>
           <Text style={{color: '#f57c00', fontWeight: '600', fontSize: 14}}>Reset</Text>
         </TouchableOpacity>
       </View>
-      </KeyboardAvoidingView>
     </SafeAreaView>
-    
   );
 }
 const styles = StyleSheet.create({
@@ -148,8 +133,4 @@ const styles = StyleSheet.create({
     marginTop: 20,
     width: '70%', // Set width to 100% of its parent container
   },
-  KeyboardAvoidingView: {
-    alignItems: 'center',
-    width: '100%'
-  }
 });

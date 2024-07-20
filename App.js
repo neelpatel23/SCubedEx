@@ -2,12 +2,10 @@ import React, { useState, createContext, useContext, useEffect } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { View, Button, ActivityIndicator, TouchableOpacity, StyleSheet } from 'react-native';
+import { View,ActivityIndicator, StyleSheet } from 'react-native';
 import { onAuthStateChanged } from 'firebase/auth';
-
 import { auth } from './config/firebase';
 import { PhotoProvider } from './screens/PhotoContext';
-// import Icon from 'react-native-vector-icons/FontAwesome5';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import Login from './screens/Login';
 import Signup from './screens/Signup';
