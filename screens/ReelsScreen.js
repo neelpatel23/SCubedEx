@@ -1,6 +1,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Text, Alert, SafeAreaView, ActivityIndicator, Image, Platform, Button } from 'react-native';
-import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Camera, useCameraPermissions } from 'expo-camera';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
@@ -13,7 +13,8 @@ const logo = require("../assets/adaptive-icon.png");
 const ReelsScreen = ({ navigation }) => {
   const user = auth.currentUser;
   const cameraRef = useRef(null);
-  const [permission, requestPermission] = useCameraPermissions();
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
+  const [galleryPermission, requestGalleryPermission] = useImagePickerPermissions();
   const [hasPermission, setPermission] = useState();
   const [isUploading, setIsUploading] = useState(false);
   const [facing, setFacing] = useState('back');
@@ -22,12 +23,12 @@ const ReelsScreen = ({ navigation }) => {
 
   useEffect(() => {
     (async () => {
-      const { status } = await requestPermission();
+      const { status } = await requestCameraPermission();
       if (status !== 'granted') {
         Alert.alert('Permission denied', 'We need your permission to use the camera');
       }
-      const { gallery } = await ImagePicker.getMediaLibraryPermissionsAsync(true)
-      setPermission(gallery === 'granted');
+      const { status: galleryStatus } = await requestGalleryPermission();
+      setPermission(galleryStatus === 'granted' && status === 'granted');
     })();
   }, []);
 
@@ -180,7 +181,7 @@ const ReelsScreen = ({ navigation }) => {
           </View>
         ) : (
           <>
-            <CameraView ref={cameraRef} style={styles.preview} facing={facing}>
+            <Camera ref={cameraRef} style={styles.preview} type={facing === 'back' ? Camera.Constants.Type.back : Camera.Constants.Type.front}>
               <View style={styles.snapButtonContainer}>
                 <TouchableOpacity onPress={takePicture} style={styles.capture}>
                   <Ionicons name='camera-outline' size={30} color="white" />
@@ -192,7 +193,7 @@ const ReelsScreen = ({ navigation }) => {
                   <Ionicons name="image-outline" size={30} color="white" />
                 </TouchableOpacity>
               </View>
-            </CameraView>
+            </Camera>
           </>
         )}
       </View>
@@ -211,15 +212,15 @@ const ReelsScreen = ({ navigation }) => {
     </View>
   );
 
-  if (!permission) {
+  if (!hasPermission) {
     return <View />;
   }
 
-  if (!permission.granted) {
+  if (!hasPermission) {
     return (
       <View style={styles.container}>
         <Text style={{ textAlign: 'center' }}>We need your permission to show the camera</Text>
-        <Button onPress={requestPermission} title="grant permission" />
+        <Button onPress={requestCameraPermission} title="grant permission" />
       </View>
     );
   }
@@ -235,7 +236,6 @@ const ReelsScreen = ({ navigation }) => {
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
