@@ -7,10 +7,12 @@ import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { deleteUser } from 'firebase/auth';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '../colors';
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
+
 
 const AccountScreen = () => {
   const user = auth.currentUser;
+  const userEmail = auth.currentUser?.email;
   const [displayName, setDisplayName] = useState(user.displayName || '');
   const [score, setScore] = useState('');
   const [userRole, setUserRole] = useState('');
@@ -21,11 +23,24 @@ const AccountScreen = () => {
       const docSnap = await getDoc(userDocRef);
       if (docSnap.exists()) {
         const userData = docSnap.data();
-        setScore(userData.photoURL || '');
+        // setScore(userData.photoURL || '');
         setUserRole(userData.role || '');
       }
     };
+
+    const fetchScoreData = async () => {
+      const userQuizRef = doc(database, 'userIQQuizzes', userEmail);
+      const userDocSnap = await getDoc(userQuizRef);
+      if (userDocSnap.exists()) {
+        const data = userDocSnap.data();
+        setScore(data.score);
+      }
+      else {
+        setScore(0)
+      }
+    }
     fetchUserData();
+    fetchScoreData()
   }, [user.uid]);
 
   const handleSignOut = () => {
@@ -89,7 +104,7 @@ const AccountScreen = () => {
   const Cube = ({ title, detail, completed, onPress }) => (
     <Card style={[styles.cube, completed ? styles.cubeCompleted : styles.cubeIncomplete, styles.shadow]} onPress={onPress}>
       <Card.Content>
-        <Ionicons name={completed ? 'check-circle-outline' : 'alert-circle-outline'} size={30} color={completed ? colors.success : colors.danger1} />
+        {/* <Ionicons name={completed ? 'check-circle-outline' : 'alert-circle-outline'} size={30} color={completed ? colors.success : colors.danger1} /> */}
         <Title>{title}</Title>
         <Paragraph>{detail}</Paragraph>
       </Card.Content>

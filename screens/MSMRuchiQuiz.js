@@ -20,7 +20,7 @@ const MSMRuchiQuiz = () => {
 
 
   const fetchQuestionsFromFirestore = async () => {
-    const questionsRef = doc(database, 'SCubedData', 'MSMRuchiData');
+    const questionsRef = doc(database, 'SCubedData', 'RuchiData');
     const docSnap = await getDoc(questionsRef);
     return docSnap.exists() ? docSnap.data().data : [];
   };

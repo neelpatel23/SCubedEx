@@ -32,8 +32,6 @@ const QAScreen = () => {
           Since you have been identified as a Kishore please press the button that reads Kishore.
           Here you will find questions that you will be able to ask Santo. 
           Write down notes as per their answers.{"\n"}{"\n"}
-          There is also another button called Mahant Swami Maharaj's Ruchi.
-          This is a quiz to see how well you know our Guru. Answer each question to the best of your ability!
           </Text>
           <View style={styles.buttonContainer}>
             <Button
@@ -44,15 +42,6 @@ const QAScreen = () => {
               compact
             >
               Kishore
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => navigation.navigate("Ruchi Quiz")}
-              style={styles.button}
-              labelStyle={styles.buttonLabel}
-              compact
-            >
-              Mahant Swami Maharaj's Ruchi
             </Button>
           </View>
         </>
@@ -65,8 +54,6 @@ const QAScreen = () => {
           Since you have been identified as a Sant please press the button that reads Pujya Sant.
           Here you will find questions that you will be able to ask Kishores. 
           Write down notes as per their answers.{"\n"}{"\n"}
-          There is also another button called Mahant Swami Maharaj's Ruchi.
-          This is a quiz to see how well you know our Guru. Answer each question to the best of your ability!
           </Text>
           <View style={styles.buttonContainer}>
             <Button
@@ -77,15 +64,6 @@ const QAScreen = () => {
               compact
             >
               Pujya Santos
-            </Button>
-            <Button
-              mode="contained"
-              onPress={() => navigation.navigate("Ruchi Quiz")}
-              style={styles.button}
-              labelStyle={styles.buttonLabel}
-              compact
-            >
-              Mahant Swami Maharaj's Ruchi
             </Button>
           </View>
         </>

@@ -73,6 +73,28 @@ const ReelsScreen = ({ navigation }) => {
     }
   };
 
+  const pickImageFromGallery = async () => {
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        aspect: [4, 3],
+        quality: 1,
+      });
+  
+      console.log("Image Picker Result: ", result); // Debug log
+  
+      if (!result.canceled && result.assets && result.assets.length > 0 && typeof result.assets[0].uri === 'string') {
+        compressAndSetImage(result.assets[0].uri);
+      } else {
+        Alert.alert("Error", "No image selected or invalid image format.");
+      }
+    } catch (error) {
+      console.error("Gallery Pick Error: ", error);
+      Alert.alert("Error", "Failed to pick an image from the gallery.");
+    }
+  };
+  
+  // Image compression function
   const compressAndSetImage = async (uri) => {
     try {
       const compressedImage = await ImageManipulator.manipulateAsync(
@@ -86,25 +108,26 @@ const ReelsScreen = ({ navigation }) => {
       Alert.alert("Error", "Failed to compress the image.");
     }
   };
-
+  
+  // Image upload function
   const uploadImage = async () => {
     if (!photoUri) {
       Alert.alert("Error", "No photo to upload.");
       return;
     }
-
+  
     setIsUploading(true);
-
+  
     try {
       const userDisplayName = auth.currentUser.displayName || 'anonymous';
       const userUID = auth.currentUser.uid;
       const fileName = `${Date.now()}.jpg`;
       const storagePath = `reels/${userDisplayName}/${fileName}`;
       const fileRef = storageRef(storage, storagePath);
-      let blob;
-
+  
       const decodedUri = decodeURIComponent(photoUri);
-
+      let blob;
+  
       if (decodedUri.startsWith('file://')) {
         const localFilePath = decodedUri.substr(7);
         const compressedImage = await ImageManipulator.manipulateAsync(
@@ -116,7 +139,7 @@ const ReelsScreen = ({ navigation }) => {
       } else {
         blob = await (await fetch(decodedUri)).blob();
       }
-
+  
       const metadata = {
         contentType: 'image/jpeg',
         customMetadata: {
@@ -127,13 +150,13 @@ const ReelsScreen = ({ navigation }) => {
           'createdAt': new Date().toISOString()
         },
       };
-
+  
       await uploadBytes(fileRef, blob, metadata);
       const downloadURL = await getDownloadURL(fileRef);
       const reelsRef = collection(database, 'reels');
       const docRef = doc(reelsRef, fileName);
       await setDoc(docRef, { url: downloadURL, metadata });
-
+  
       Alert.alert("Success", "Photo uploaded successfully!");
     } catch (error) {
       console.error("Upload Error: ", error);
@@ -146,7 +169,8 @@ const ReelsScreen = ({ navigation }) => {
 
   const renderCameraView = () => {
     const isAndroid = Platform.OS === 'android';
-
+  
+    console.log(facing)
     return (
       <View style={styles.container}>
         <SafeAreaView style={styles.iconContainer}>
@@ -166,13 +190,16 @@ const ReelsScreen = ({ navigation }) => {
           </View>
         ) : (
           <>
-            <CameraView ref={cameraRef} style={styles.preview} type={facing}>
+            <CameraView ref={cameraRef} style={styles.preview} facing={facing}>
               <View style={styles.snapButtonContainer}>
                 <TouchableOpacity onPress={takePicture} style={styles.capture}>
                   <Ionicons name='camera-outline' size={30} color="white" />
                 </TouchableOpacity>
                 <TouchableOpacity onPress={toggleCameraFacing} style={styles.flipButton}>
                   <Ionicons name="camera-reverse-outline" size={30} color="white" />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={pickImageFromGallery} style={styles.galleryButton}>
+                  <Ionicons name="image-outline" size={30} color="white" />
                 </TouchableOpacity>
               </View>
             </CameraView>
@@ -181,6 +208,7 @@ const ReelsScreen = ({ navigation }) => {
       </View>
     );
   };
+
 
   const renderPreviewView = () => (
     <View style={styles.preview}>
@@ -252,6 +280,16 @@ const styles = StyleSheet.create({
     top: 0,
     right: 0,
     marginLeft: 20,
+  },
+  galleryButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    borderRadius: 30,
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   preview: {
     backgroundColor: colors.primary,

@@ -74,11 +74,12 @@ const Schedule = () => {
   useEffect(() => {
     const fetchedSchedule = schedule.schedule;
     const dayMappings = { 
-      'Day1': '2024-07-30', 
-      'Day2': '2024-07-31', 
-      'Day3': '2024-08-01', 
-      'Day4': '2024-08-02',
-      'Day5': '2024-08-03'
+      'Day1': '2024-07-29', 
+      'Day2': '2024-07-30', 
+      'Day3': '2024-07-31', 
+      'Day4': '2024-08-01',
+      'Day5': '2024-08-02',
+      'Day6': '2024-08-03'
     };
   
     const monthNames = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
@@ -380,7 +381,7 @@ const styles = StyleSheet.create({
   },
   tabLabel: {
     color: 'black',
-    fontSize: 15,
+    fontSize: 10.5,
   },
   tabIndicator: {
     backgroundColor: colors.primary,
