@@ -41,11 +41,11 @@
       <true/>
     </dict>
     <key>NSCameraUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your camera.</string>
+    <string>Allow $(PRODUCT_NAME) to access your camera to upload photos into Reels for this years Retreat</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your microphone</string>
+    <string>Allow $(PRODUCT_NAME) to access your microphone to upload photos into Reels for this years Retreat</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Allow $(PRODUCT_NAME) to access your photos</string>
+    <string>Allow $(PRODUCT_NAME) to access your photos to upload photos into Reels for this years Retreat</string>
     <key>UILaunchStoryboardName</key>
     <string>SplashScreen</string>
     <key>UIRequiredDeviceCapabilities</key>

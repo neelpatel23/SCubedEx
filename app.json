@@ -34,16 +34,16 @@
       [
         "expo-camera",
         {
-          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
-          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera to upload photos into Reels for this years Retreat",
+          "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone to upload photos into Reels for this years Retreat",
           "recordAudioAndroid": true
         }
       ],
       [
         "expo-image-picker",
         {
-          "photosPermission": "Allow $(PRODUCT_NAME) to use the library to upload photos to Reels",
-          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera",
+          "photosPermission": "Allow $(PRODUCT_NAME) to use the library to upload photos into Reels for this years Retreat",
+          "cameraPermission": "Allow $(PRODUCT_NAME) to use the camera to upload photos into Reels for this years Retreat",
 
           "//": "Disables the microphone permission",
           "microphonePermission": false
